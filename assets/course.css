@@ -1,0 +1,392 @@
+:root {
+  --ink: #1e2a32;
+  --muted: #56636b;
+  --paper: #fffdf8;
+  --wash: #e9f0ee;
+  --line: #cbd7d4;
+  --accent: #9a3c26;
+  --accent-dark: #71301f;
+  --accent2: #1e6670;
+  --accent2-light: #e2edeb;
+  --code: #f5f0e5;
+  --quiet: #f4f7f4;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--wash);
+  color: var(--ink);
+  font: 18px/1.62 Georgia, serif;
+}
+
+a { color: var(--accent2); }
+a:hover { color: var(--accent-dark); }
+a:focus-visible {
+  outline: 3px solid #d39a2e;
+  outline-offset: 3px;
+}
+
+.page {
+  max-width: 980px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 3.5rem 5.8rem 4.5rem;
+  background: var(--paper);
+}
+
+.lesson-header,
+.map-header,
+.reference-header {
+  position: relative;
+  border-top: 7px solid var(--accent);
+  padding-top: 1.35rem;
+  margin-bottom: 2rem;
+}
+
+.course-mark,
+.phase-label,
+.section-kicker,
+.example-label,
+.version-label,
+.lesson-number,
+.lesson-status,
+.map-lesson-number {
+  font: 700 .72rem/1.2 Arial, sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.course-mark {
+  display: inline-block;
+  color: var(--accent2);
+  text-decoration: none;
+}
+
+.phase-label {
+  margin: 1.6rem 0 .35rem;
+  color: var(--accent);
+}
+
+.lesson-number {
+  position: absolute;
+  top: .5rem;
+  right: 0;
+  color: var(--accent);
+  font-size: 2.7rem;
+  letter-spacing: -.06em;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  line-height: 1.15;
+}
+
+h1 {
+  max-width: 760px;
+  margin: .25rem 0 .8rem;
+  font-size: clamp(2.25rem, 5vw, 3.45rem);
+  letter-spacing: -.055em;
+}
+
+h2 {
+  margin: 0 0 .7rem;
+  font-size: 1.5rem;
+  letter-spacing: -.025em;
+}
+
+h3 {
+  margin: 0 0 .35rem;
+  font-size: 1.05rem;
+}
+
+p { max-width: 73ch; }
+
+.lede {
+  max-width: 67ch;
+  margin: 0;
+  color: #34454c;
+  font-size: 1.2rem;
+}
+
+.lesson-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.3rem;
+  margin: 0 0 1.35rem;
+  color: var(--muted);
+  font-size: .68rem;
+}
+
+.lesson-status span:first-child { color: var(--accent2); }
+
+.mission,
+.carry-forward,
+.callout {
+  margin: 1.4rem 0;
+  padding: .9rem 1.15rem;
+  border-left: 4px solid var(--accent2);
+  background: #f1f8f6;
+}
+
+.carry-forward {
+  border-left-color: var(--accent);
+  background: #fbf5e9;
+}
+
+.lesson-section { margin: 2.8rem 0; }
+
+.section-kicker {
+  margin-bottom: .7rem;
+  color: var(--accent2);
+}
+
+.outcomes-section {
+  padding: 1.15rem 1.35rem;
+  border: 1px solid var(--line);
+  background: var(--quiet);
+}
+
+ul,
+ol { padding-left: 1.45rem; }
+li { margin: .35rem 0; }
+
+.outcomes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .75rem 1.5rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.outcomes li { padding-right: .5rem; }
+
+.map-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+  margin: 1rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-family: Arial, sans-serif;
+  font-size: .9rem;
+}
+
+.map-node {
+  display: inline-block;
+  padding: .3rem .55rem;
+  border: 1px solid #c9ddda;
+  border-radius: 2px;
+  background: var(--accent2-light);
+}
+
+.map-arrow {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+
+.concept {
+  padding-top: .85rem;
+  border-top: 2px solid var(--line);
+}
+
+.concept p { margin: 0; font-size: .97rem; }
+
+.worked-section {
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.example { margin: 1.8rem 0 2.2rem; }
+.example:last-child { margin-bottom: 0; }
+
+.example-label { margin-bottom: .55rem; color: var(--accent); }
+
+.example-versions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.version {
+  padding: .9rem 1rem;
+  border-top: 3px solid var(--line);
+  background: #fff;
+}
+
+.version.less-controlled { border-color: #a64638; }
+.version.more-deliberate { border-color: var(--accent2); }
+.version p { margin: .25rem 0 0; }
+
+.version-label { color: var(--muted); font-size: .66rem; }
+.example-note { margin: .7rem 0 0; color: var(--muted); font-size: .95rem; }
+
+.decision-section {
+  padding: 1.25rem 1.35rem;
+  border: 1px solid #d6c7a9;
+  background: var(--code);
+}
+
+.decision-list { margin-bottom: 0; }
+.trap-list { margin-top: 0; }
+.trap-list li::marker { color: var(--accent); }
+
+.references-section {
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+}
+
+.references-section p { margin: .45rem 0; }
+.link-separator { color: var(--accent); }
+.source { color: var(--muted); font-size: .9rem; }
+.teacher-note { color: var(--muted); font-style: italic; font-size: .95rem; }
+
+.lesson-nav,
+.reference-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-family: Arial, sans-serif;
+  font-size: .88rem;
+}
+
+.lesson-nav a:last-child,
+.reference-nav a:last-child { text-align: right; }
+
+/* Course map */
+.map-header { margin-bottom: 2.3rem; }
+.map-header h1 { margin-top: .5rem; }
+
+.orientation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0 3.2rem;
+}
+
+.orientation-grid > div {
+  padding: 1rem 1.15rem;
+  border-top: 3px solid var(--accent2);
+  background: var(--quiet);
+}
+
+.orientation-grid p { margin: .2rem 0 0; font-size: .95rem; }
+
+.map-module { margin: 3rem 0; }
+.module-heading { margin-bottom: 1rem; }
+.module-heading h2 { margin-bottom: .2rem; }
+.module-heading p { margin: 0; color: var(--muted); }
+
+.map-lesson-list {
+  border-top: 1px solid var(--line);
+}
+
+.map-lesson {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr auto;
+  gap: .9rem;
+  align-items: start;
+  padding: 1rem .65rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.map-lesson:hover { background: var(--quiet); }
+.map-lesson-number { padding-top: .15rem; color: var(--accent); }
+.map-lesson strong { display: block; font: 700 1rem/1.25 Arial, sans-serif; }
+.map-lesson small { display: block; margin-top: .25rem; color: var(--muted); font-size: .88rem; line-height: 1.45; }
+.map-lesson-arrow { color: var(--accent2); font: 1.2rem Arial, sans-serif; }
+
+.transition-section {
+  margin: 4rem 0 2rem;
+  padding: 1.5rem;
+  border: 1px solid #d6c7a9;
+  background: var(--code);
+}
+
+.transition-section h2 { margin-top: .2rem; }
+.transition-section p { margin-bottom: 1.25rem; }
+.primary-link { font: 700 .9rem Arial, sans-serif; }
+
+.reference-index {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.reference-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1rem;
+  font: .9rem Arial, sans-serif;
+}
+
+/* Reference pages */
+.reference-header h1 { margin-top: .6rem; }
+.reference-page table { margin: 1.5rem 0; }
+
+table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: .92rem;
+}
+
+th,
+td {
+  padding: .65rem .6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--accent2);
+  font: 700 .72rem/1.25 Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+td:first-child { width: 25%; }
+.revision-list { padding-left: 1.7rem; }
+.revision-list li { padding-left: .25rem; margin: .65rem 0; }
+
+@media (max-width: 760px) {
+  body { font-size: 17px; }
+  .page { padding: 2rem 1.25rem 3rem; }
+  .lesson-number { top: .4rem; font-size: 2rem; }
+  .outcomes,
+  .concept-grid,
+  .example-versions,
+  .orientation-grid { grid-template-columns: 1fr; }
+  .lesson-nav { grid-template-columns: 1fr; }
+  .lesson-nav a:last-child,
+  .reference-nav a:last-child { text-align: left; }
+  .map-lesson { grid-template-columns: 2.4rem 1fr auto; gap: .55rem; }
+  .map-lesson small { font-size: .82rem; }
+  .map-flow { line-height: 1.35; }
+  th,
+  td { padding: .5rem .35rem; }
+  .reference-page table { display: block; overflow-x: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

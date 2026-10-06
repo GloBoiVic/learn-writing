@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Private source material — never publish (personal emails, submitted grants)
+source-material/
+
+# Local progress tracking
+learning-records/
