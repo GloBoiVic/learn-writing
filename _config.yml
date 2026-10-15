@@ -1,0 +1,3 @@
+# GitHub Pages (Jekyll) settings. Keep the Markdown edition in the repo but off the live site.
+exclude:
+  - markdown

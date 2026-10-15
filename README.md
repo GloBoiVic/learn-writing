@@ -8,6 +8,7 @@ The course map is available at `http://127.0.0.1:8765/COURSE-MAP.html` while the
 
 - `lessons/`, `reference/`, `assets/`, and `learning-records/` are the persistent Teach course materials.
 - `source-material/` contains the original writing samples used for course customization. It is organized into personal emails, admired writing, and submitted grants.
+- `markdown/` is a plain-text edition of the course (per-lesson files, reference sheets, and `deliberate-prose-course.md` as one read-through file). It is generated, so do not edit it by hand.
 - `tools/build-course.mjs` is the course generator. It produces the 16-lesson knowledge phase, course map, and reference sheets; make durable course-content changes there, then run `node tools/build-course.mjs` from the workspace root.
 
 ## Course phases

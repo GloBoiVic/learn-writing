@@ -1003,3 +1003,120 @@ map += `<section class="transition-section"><span class="section-kicker">When th
 </html>
 `;
 fs.writeFileSync('COURSE-MAP.html', map);
+
+// ---------------------------------------------------------------------------
+// Markdown edition: the same lessons, references, and course map as plain text.
+// Output goes to markdown/ (per-file) and markdown/deliberate-prose-course.md (single file).
+// ---------------------------------------------------------------------------
+const mdRoot = 'markdown';
+fs.rmSync(mdRoot, { recursive: true, force: true });
+for (const directory of ['lessons', 'reference']) fs.mkdirSync(`${mdRoot}/${directory}`, { recursive: true });
+
+function mdInline(value) {
+  return value
+    .replace(/<br\s*\/?>/g, '  \n')
+    .replace(/<\/?(em|i)>/g, '*')
+    .replace(/<\/?(strong|b)>/g, '**')
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/g, '[$2]($1)')
+    .replace(/<span class="map-arrow">(.*?)<\/span>/g, ' $1 ')
+    .replace(/<[^>]+>/g, '')
+    .replaceAll('&rarr;', '→').replaceAll('&larr;', '←').replaceAll('&middot;', '·')
+    .replaceAll('&quot;', '"').replaceAll('&#39;', "'").replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
+    .replace(/[ \t]+\n/g, (m) => (m.startsWith('  ') ? m : '\n'))
+    .trim();
+}
+
+function mdQuote(text) {
+  return text.split('\n').map((line) => `> ${line}`.trimEnd()).join('\n');
+}
+
+function mdTableCell(value) {
+  return mdInline(value).replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
+}
+
+// Convert the simple HTML used in reference sheets (tables, lists, callouts, map-flow) to Markdown.
+function htmlBodyToMarkdown(html) {
+  const out = [];
+  const tokenPattern = /<table>([\s\S]*?)<\/table>|<(ul|ol)[^>]*>([\s\S]*?)<\/\2>|<div class="map-flow">([\s\S]*?)<\/div>|<div class="callout">([\s\S]*?)<\/div>|<(h[1-6]|p)[^>]*>([\s\S]*?)<\/\6>/g;
+  for (const match of html.matchAll(tokenPattern)) {
+    const [, table, listTag, listBody, flow, callout, headingTag, headingBody] = match;
+    if (table) {
+      const rows = [...table.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((row) => [...row[1].matchAll(/<t[hd]>([\s\S]*?)<\/t[hd]>/g)].map((cell) => mdTableCell(cell[1])));
+      out.push(`| ${rows[0].join(' | ')} |\n| ${rows[0].map(() => '---').join(' | ')} |\n${rows.slice(1).map((row) => `| ${row.join(' | ')} |`).join('\n')}`);
+    } else if (listTag) {
+      const items = [...listBody.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((item) => mdInline(item[1]));
+      out.push(items.map((item, i) => `${listTag === 'ol' ? `${i + 1}.` : '-'} ${item}`).join('\n'));
+    } else if (flow) {
+      out.push(`**${mdInline(flow.replace(/<span class="map-node">(.*?)<\/span>/g, '$1'))}**`);
+    } else if (callout) {
+      out.push(mdQuote(mdInline(callout)));
+    } else if (headingTag === 'p') {
+      out.push(mdInline(headingBody));
+    } else {
+      out.push(`${'#'.repeat(Number(headingTag[1]))} ${mdInline(headingBody)}`);
+    }
+  }
+  return out.join('\n\n');
+}
+
+function mdLink(from, targetHtmlPath) {
+  return from === 'root' ? targetHtmlPath.replace('.html', '.md') : `../${targetHtmlPath.replace('.html', '.md')}`;
+}
+
+function renderLessonMarkdown(index, lesson) {
+  const number = String(index + 1).padStart(2, '0');
+  const bullets = (items) => items.map((item) => `- ${mdInline(item)}`).join('\n');
+  const previous = index > 0 ? `[← ${lessons[index - 1].title}](${mdLink('lessons', lessonPath(index - 1)).replace('../lessons/', '')})` : '';
+  const next = index < lessons.length - 1 ? `[${lessons[index + 1].title} →](${mdLink('lessons', lessonPath(index + 1)).replace('../lessons/', '')})` : '';
+  const references = lesson.refs.map((ref) => `[${ref.split('/').pop().replace('.html', '').replaceAll('-', ' ')}](${mdLink('lessons', ref)})`).join(' · ');
+
+  return [
+    `# Lesson ${number}: ${mdInline(lesson.title)}`,
+    `*${lesson.phase} · Deliberate Prose, knowledge phase. Read for understanding; practice and testing come later.*`,
+    `**${mdInline(lesson.lede)}**`,
+    mdQuote(`**Why this matters.** ${mdInline(lesson.mission)}`),
+    `## By the end of this lesson\n\n${bullets(lesson.outcomes)}`,
+    `## The map\n\n**${lesson.map.join(' → ')}**`,
+    `## Core ideas\n\n${lesson.concepts.map(([title, body]) => `### ${mdInline(title)}\n\n${mdInline(body)}`).join('\n\n')}`,
+    `## Worked choices\n\n${lesson.examples.map((example) => `### ${mdInline(example.label)}\n\n**Less controlled**\n\n${mdQuote(mdInline(example.before))}\n\n**More deliberate**\n\n${mdQuote(mdInline(example.after))}\n\n*Why:* ${mdInline(example.note)}`).join('\n\n')}`,
+    `## Use this decision rule: ${mdInline(lesson.decisionTitle)}\n\n${bullets(lesson.decisions)}`,
+    `## Watch for these traps\n\n${bullets(lesson.traps)}`,
+    mdQuote(`**Carry forward.** ${mdInline(lesson.carry)}`),
+    `## Return to these\n\n${references}\n\n**Primary source:** [${sourceLabels[lesson.source]}](${sources[lesson.source]})\n\n*If a distinction is unclear, ask about it before practice begins. The goal of this phase is a complete map, not silent confusion.*`,
+    `---\n\n${[previous, next].filter(Boolean).join(' | ')}`,
+  ].join('\n\n') + '\n';
+}
+
+const mdLessonFiles = lessons.map((lesson, index) => {
+  const text = renderLessonMarkdown(index, lesson);
+  fs.writeFileSync(`${mdRoot}/${lessonPath(index).replace('.html', '.md')}`, text);
+  return text;
+});
+
+const mdReferences = [];
+for (const file of fs.readdirSync('reference').filter((name) => name.endsWith('.html')).sort()) {
+  const html = fs.readFileSync(`reference/${file}`, 'utf8');
+  const title = mdInline(html.match(/<h1>([\s\S]*?)<\/h1>/)[1]);
+  const body = html.match(/<\/header>([\s\S]*?)<nav class="reference-nav">/)[1];
+  const text = `# ${title}\n\n${htmlBodyToMarkdown(body)}\n`;
+  fs.writeFileSync(`${mdRoot}/reference/${file.replace('.html', '.md')}`, text);
+  mdReferences.push({ file: file.replace('.html', '.md'), title, text });
+}
+
+const mdMapText = [
+  '# Deliberate Prose: Course Map',
+  `*${lessons.length} lessons that provide the information needed before practice: writing judgment, sentence control, prose structure, voice, and grant application credibility.*`,
+  '**This phase teaches** a complete map of the choices you will later practice: what to notice, what it means, and how to decide.\n\n**This phase does not test.** No quizzes, gates, or required retrieval yet. The practice phase begins when you say you are ready.',
+  ...modules.map(([moduleTitle, start, end, description]) => `## ${moduleTitle}\n\n${description}\n\n${lessons.slice(start, end + 1).map((lesson, offset) => `${start + offset + 1}. [${mdInline(lesson.title)}](${lessonPath(start + offset).replace('.html', '.md')}): ${mdInline(lesson.lede)}`).join('\n')}`),
+  `## Reference desk\n\n${mdReferences.map((ref) => `- [${ref.title}](reference/${ref.file})`).join('\n')}`,
+  '## When the map is complete\n\nAfter the last lesson, tell the agent you are ready for practice.',
+].join('\n\n') + '\n';
+fs.writeFileSync(`${mdRoot}/README.md`, mdMapText);
+
+// One file with everything, in course order, for reading straight through.
+fs.writeFileSync(`${mdRoot}/deliberate-prose-course.md`, [
+  mdMapText.replace(/\]\((?:lessons|reference)\/[^)]*\)/g, ']'),
+  ...mdLessonFiles.map((text) => text.replace(/\n---\n\n[^\n]*\n$/, '\n').replace(/## Return to these\n\n[^\n]*\n\n/, '## Return to these\n\n')),
+  '# Reference Sheets',
+  ...mdReferences.map((ref) => ref.text.replace(/^# /, '## ')),
+].join('\n\n---\n\n'));
